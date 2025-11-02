@@ -3,3 +3,7 @@ pandas
 plotly
 pycaiso
 gunicorn
+datetime
+typing
+time
+matplotlib
