@@ -5,4 +5,9 @@ pycaiso
 gunicorn
 datetime
 typing
+
 matplotlib
+
+streamlit
+plotly
+pandas
