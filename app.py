@@ -68,7 +68,7 @@ yearly_monthly_avg['Month_name'] = (pd.to_datetime(yearly_monthly_avg['Month'].a
 st.sidebar.header("Filters")
 available_months = [m for m in yearly_monthly_avg["Month"].dropna().unique()]
 available_months = sorted([int(m) for m in available_months])
-month_names = {i: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][i-1] for i in range(1,13)}
+month_names = {i: ["January","February","March","April","May","June","July","August","September","October","November","December"][i-1] for i in range(1,13)}
 
 
 month_choice_num = st.sidebar.selectbox(
@@ -88,7 +88,7 @@ fig1 = px.line(
     y="Current demand",
     color="Year",
     markers=False,
-    title=f"Demand vs Time — {month_names[int(month_choice_num)]}",
+    title=f"Demand vs Time : {month_names[int(month_choice_num)]}",
 )
 fig1.update_layout(xaxis_title="Time", yaxis_title="Demand", legend_title="Year")
 fig1.update_xaxes(type="category", tickangle=-45)
@@ -96,8 +96,9 @@ fig1.update_xaxes(type="category", tickangle=-45)
 
 
 # --- Layout ---
-st.subheader("Hourly Demand Trend for Different Months")
+st.subheader("Historical Changes in the Duck Curve (Demand Curve)")
 st.plotly_chart(fig1, use_container_width=True)
+
 
 
 
