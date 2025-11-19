@@ -63,6 +63,7 @@ yearly_monthly_avg['Month_name'] = (pd.to_datetime(yearly_monthly_avg['Month'].a
 
 
 
+
 # --- Controls ---
 st.sidebar.header("Filters")
 available_months = [m for m in yearly_monthly_avg["Month"].dropna().unique()]
@@ -77,12 +78,6 @@ month_choice_num = st.sidebar.selectbox(
 )
 
 
-years_available = sorted(yearly_monthly_avg["Year"].dropna().unique())
-
-# For Plot 2
-year_choice = st.sidebar.selectbox("Select Year (for Plot 2)", options=years_available)
-
-
 #--- Plot 1: Value vs Time for a chosen Month, colored by Year ---
 f1 = yearly_monthly_avg[yearly_monthly_avg["Month"] == month_choice_num].copy()
 f1 = f1.sort_values(["Time", "Year"])
@@ -93,39 +88,19 @@ fig1 = px.line(
     y="Current demand",
     color="Year",
     markers=False,
-    title=f"Value vs Time — {month_names[int(month_choice_num)]} (All Years)",
+    title=f"Demand vs Time — {month_names[int(month_choice_num)]}",
 )
-fig1.update_layout(xaxis_title="Time of Day", yaxis_title="Demand", legend_title="Year")
+fig1.update_layout(xaxis_title="Time", yaxis_title="Demand", legend_title="Year")
 fig1.update_xaxes(type="category", tickangle=-45)
 
 
 
-# --- Plot 2: For a selected Year, Value vs Time colored by Month ---
-f2 = yearly_monthly_avg[yearly_monthly_avg["Year"] == year_choice].copy()
-f2 = f2.sort_values(["Time", "Month"])
-
-fig2 = px.line(
-    f2,
-    x="Time",
-    y="Current demand",
-    color="Month",
-    title=f"Value vs Time — Year {int(year_choice)} (All Months)",
-)
-fig2.update_layout(xaxis_title="Time of Day", yaxis_title="Value", legend_title="Month")
-fig2.update_xaxes(type="category", tickangle=-45)
-
 # --- Layout ---
-col1, col2 = st.columns(2)
-with col1:
-    st.subheader("Plot 1")
-    st.plotly_chart(fig1, use_container_width=True)
-with col2:
-    st.subheader("Plot 2")
-    st.plotly_chart(fig2, use_container_width=True)
+st.subheader("Hourly Demand Trend for Different Months")
+st.plotly_chart(fig1, use_container_width=True)
 
-# --- Optional data preview ---
-with st.expander("Preview data (first 200 rows)"):
-    st.dataframe(yearly_monthly_avg[["Year","Month","Time","Current demand"]].head(200))
+
+
 
 
 
