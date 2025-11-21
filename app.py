@@ -20,8 +20,7 @@ import warnings
 # Ignore all warnings
 warnings.filterwarnings("ignore")
 
-combined_df = pd.read_csv('demand_2019_2025.csv')
-
+combined_df = pd.read_csv('netdemand_2019_2025.csv')
 
 
 
@@ -30,32 +29,33 @@ combined_df['Datetime'] = pd.to_datetime(combined_df['Date'].astype(str) + ' ' +
 # Extract additional time features
 combined_df['Year'] =combined_df['Datetime'].dt.year
 combined_df['Month'] = combined_df['Datetime'].dt.month
-combined_df['Day'] = combined_df['Datetime'].dt.day
+combined_df['Day of Year'] = combined_df['Datetime'].dt.dayofyear
 combined_df['Hour'] = combined_df['Datetime'].dt.hour
 combined_df['Time'] = combined_df['Datetime'].dt.time
 
 
+# Function to add ordinal suffix
+def add_ordinal(n):
+    if 11 <= n % 100 <= 13:
+        suffix = 'th'
+    else:
+        suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')
+    return f"{n}{suffix}"
 
-# Group by Hour and compute average demand for each grouping
-monthly_avg = combined_df.groupby(['Month', 'Time'])['Current demand'].mean().reset_index()
-yearly_avg = combined_df.groupby(['Year', 'Time'])['Current demand'].mean().reset_index()
-yearly_month_avg = combined_df.groupby(['Year','Month', 'Time'])['Current demand'].mean().reset_index()
+# Extract month name and day with suffix
+
+# Create new column with formatted date
+combined_df['Day'] = combined_df['Datetime'].apply(lambda x: f"{x.strftime('%B')} {add_ordinal(x.day)}")
 
 
-# Group by Hour and compute average demand for each grouping
-yearly_monthly_avg = combined_df.groupby(['Year','Month', 'Time'])['Current demand'].mean().reset_index()
-
-
-yearly_monthly_avg['Month_name'] = (pd.to_datetime(yearly_monthly_avg['Month'].astype(str) + '-01-2000', format='%m-%d-%Y')).dt.strftime('%b')
-
-
-
+yearly_avg = combined_df.groupby(['Year', 'Time'])['Net demand'].mean().reset_index()
+yearly_monthly_avg = combined_df.groupby(['Year','Month', 'Time'])['Net demand'].mean().reset_index()
 
 # --- Controls ---
 st.sidebar.header("Filters")
 available_months = [m for m in yearly_monthly_avg["Month"].dropna().unique()]
 available_months = sorted([int(m) for m in available_months])
-month_names = {i: ["January","February","March","April","May","June","July","August","September","October","November","December"][i-1] for i in range(1,13)}
+month_names = {i: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][i-1] for i in range(1,13)}
 
 
 month_choice_num = st.sidebar.selectbox(
@@ -72,18 +72,52 @@ f1 = f1.sort_values(["Time", "Year"])
 fig1 = px.line(
     f1,
     x="Time",
-    y="Current demand",
+    y="Net demand",
     color="Year",
-    color_discrete_sequence=px.colors.sequential.algae,
     markers=False,
-    title=f"Demand vs Time : {month_names[int(month_choice_num)]}",
+    color_discrete_sequence=px.colors.sequential.algae,
+    title=f"Net Demand vs Time — {month_names[int(month_choice_num)]}",
+)
+fig1.update_layout(xaxis_title="Time of Day", yaxis_title="Net Demand", legend_title="Year")
+fig1.update_xaxes(type="category", tickangle=-90)
+
+
+#--- Plot 2: Value vs Time for a chosen day, colored by Year ---
+# --- Controls ---
+st.sidebar.header("Filters")
+available_days = [m for m in combined_df["Day"].dropna().unique()]
+available_days = sorted([(m) for m in available_days])
+#month_names = {i: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][i-1] for i in range(1,13)}
+
+
+day_choice_num = st.sidebar.selectbox(
+    "Select Day (for Plot 2)",
+    options=available_days#,
+    #format_func=lambda x: f"({int(x)})"
 )
 
-fig1.update_layout(xaxis_title="Time", yaxis_title="Demand", legend_title="Year")
-fig1.update_xaxes(type="category", tickangle=-45)
 
+f2 = combined_df[combined_df["Day"] == day_choice_num].copy()
+f2 = f2.sort_values(["Time", "Year"])
 
+fig2 = px.line(
+    f2,
+    x="Time",
+    y="Net demand",
+    color="Year",
+    markers=False,
+    color_discrete_sequence=px.colors.sequential.algae,
+    title=f"Net Demand vs Time",
+)
+fig2.update_layout(xaxis_title="Time of Day", yaxis_title="Net Demand", legend_title="Year")
+fig2.update_xaxes(type="category", tickangle=-90)
 
 # --- Layout ---
-st.subheader("Historical Changes in the Duck Curve (Demand Curve)")
-st.plotly_chart(fig1, use_container_width=True)
+# --- Layout ---
+col1, col2 = st.columns(2)
+with col1:
+    st.subheader("Plot 1")
+    #st.plotly_chart(fig1, use_container_width=True)
+with col2:
+    st.subheader("Plot 2")
+    #st.plotly_chart(fig2, use_container_width=True)
