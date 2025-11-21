@@ -86,7 +86,7 @@ fig1.update_xaxes(type="category", tickangle=-90)
 # --- Controls ---
 st.sidebar.header("Filters")
 available_days = [m for m in combined_df["Day"].dropna().unique()]
-available_days = sorted([(m) for m in available_days])
+#available_days = sorted([(m) for m in available_days])
 #month_names = {i: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][i-1] for i in range(1,13)}
 
 
@@ -107,7 +107,7 @@ fig2 = px.line(
     color="Year",
     markers=False,
     color_discrete_sequence=px.colors.sequential.algae,
-    title=f"Net Demand vs Time",
+    title=f"Net Demand vs Time — " + day_choice_num,
 )
 fig2.update_layout(xaxis_title="Time of Day", yaxis_title="Net Demand", legend_title="Year")
 fig2.update_xaxes(type="category", tickangle=-90)
@@ -121,3 +121,4 @@ with col1:
 with col2:
     st.subheader("Plot 2")
     #st.plotly_chart(fig2, use_container_width=True)
+
