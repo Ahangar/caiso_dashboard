@@ -113,12 +113,8 @@ fig2.update_layout(xaxis_title="Time of Day", yaxis_title="Net Demand", legend_t
 fig2.update_xaxes(type="category", tickangle=-90)
 
 # --- Layout ---
-# --- Layout ---
-col1, col2 = st.columns(2)
-with col1:
-    st.subheader("Plot 1")
-    #st.plotly_chart(fig1, use_container_width=True)
-with col2:
-    st.subheader("Plot 2")
-    #st.plotly_chart(fig2, use_container_width=True)
+
+st.subheader("Plot 1")
+st.subheader("Plot 2")
+
 
