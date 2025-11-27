@@ -65,7 +65,7 @@ netdemand['Day'] = netdemand['Datetime'].apply(lambda x: f"{x.strftime('%B')} {a
 
 #yearly_avg = netdemand.groupby(['Year', 'Time'])['Net demand'].mean().reset_index()
 netdemand_yearly_monthly = netdemand.groupby(['Year','Month', 'Time'])['Net demand'].mean().reset_index()
-fuelsource_yearly_monthly = fuelsource.groupby(['Year','Month', 'Time'])[['Solar','Wind']].mean().reset_index()
+fuelsource_yearly_monthly = fuelsource.groupby(['Year','Month', 'Time'])[['Solar','Wind','Natural gas']].mean().reset_index()
 fuelsource_yearly_monthly['Solar_Wind'] = fuelsource_yearly_monthly['Solar'] + fuelsource_yearly_monthly['Wind']
 
 
@@ -117,12 +117,27 @@ fig2 = px.line(
     color_discrete_sequence=px.colors.sequential.Burg,
     title=f"Solar-Wind vs Time — {month_names[int(month_choice_num)]}",
 )
+
+# add Natural Gas trace
+for year in f2["Year"].unique():
+    df_year = f2[f2["Year"] == year]
+    fig2.add_trace(
+        go.Line(
+            x=df_year["Time"],
+            y=df_year["Natural gas"],
+            name=f"Natural gas — {year}",
+            mode="lines"
+        )
+    )
+    
+
 fig2.update_layout(xaxis_title="Time of Day", yaxis_title="MW", legend_title="Year")
 fig2.update_xaxes(type="category", tickangle=-90)
 
 
 #st.subheader("Plot 1")
 st.plotly_chart(fig2, use_container_width=True)
+
 
 
 
