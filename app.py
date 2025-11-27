@@ -113,7 +113,7 @@ fig2 = px.line(
     y="Solar_Wind",
     color="Year",
     markers=False,
-    color_discrete_sequence=px.colors.sequential.algae,
+    color_discrete_sequence=px.colors.sequential.Burg,
     title=f"Solar vs Time — {month_names[int(month_choice_num)]}",
 )
 fig2.update_layout(xaxis_title="Time of Day", yaxis_title="Solar", legend_title="Year")
@@ -122,6 +122,7 @@ fig2.update_xaxes(type="category", tickangle=-90)
 
 #st.subheader("Plot 1")
 st.plotly_chart(fig2, use_container_width=True)
+
 
 
 
