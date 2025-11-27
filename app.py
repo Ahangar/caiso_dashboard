@@ -76,7 +76,7 @@ month_names = {i: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","
 
 
 month_choice_num = st.selectbox(
-    "Select Month (for Plot 1)",
+    "Select Month",
     options=available_months,
     format_func=lambda x: f"{month_names[int(x)]} ({int(x)})"
 )
@@ -122,6 +122,7 @@ fig2.update_xaxes(type="category", tickangle=-90)
 
 #st.subheader("Plot 1")
 st.plotly_chart(fig2, use_container_width=True)
+
 
 
 
