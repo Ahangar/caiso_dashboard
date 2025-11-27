@@ -117,7 +117,7 @@ fig2 = px.line(
     color_discrete_sequence=px.colors.sequential.Burg,
     title=f"Solar-Wind vs Time — {month_names[int(month_choice_num)]}",
 )
-
+import plotly.graph_objects as go
 # add Natural Gas trace
 for year in f2["Year"].unique():
     df_year = f2[f2["Year"] == year]
@@ -137,6 +137,7 @@ fig2.update_xaxes(type="category", tickangle=-90)
 
 #st.subheader("Plot 1")
 st.plotly_chart(fig2, use_container_width=True)
+
 
 
 
