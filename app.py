@@ -20,18 +20,32 @@ import warnings
 # Ignore all warnings
 warnings.filterwarnings("ignore")
 
-combined_df = pd.read_csv('netdemand_2019_2025.csv')
+# Import downloaded files
+netdemand = pd.read_csv('netdemand_2019_2025.csv')
+fuelsource = pd.read_csv('fuelsource_2019_2025.csv')
 
 
-
-combined_df['Datetime'] = pd.to_datetime(combined_df['Date'].astype(str) + ' ' + combined_df['Time'], format='%Y-%m-%d %H:%M')
+#netdemand['Datetime'] = pd.to_datetime(netdemand['Date'].astype(str) + ' ' + netdemand['Time'], format='%Y-%m-%d %H:%M')
 
 # Extract additional time features
-combined_df['Year'] =combined_df['Datetime'].dt.year
-combined_df['Month'] = combined_df['Datetime'].dt.month
-combined_df['Day of Year'] = combined_df['Datetime'].dt.dayofyear
-combined_df['Hour'] = combined_df['Datetime'].dt.hour
-combined_df['Time'] = combined_df['Datetime'].dt.time
+def extract_time_features(df):
+    df['Datetime'] = pd.to_datetime(df['Date'].astype(str) + ' ' + df['Time'], format='%Y-%m-%d %H:%M')
+    
+    df['Year'] =df['Datetime'].dt.year
+    df['Month'] = df['Datetime'].dt.month
+    df['Hour'] = df['Datetime'].dt.hour
+    df['Time'] = df['Datetime'].dt.time
+
+
+extract_time_features(netdemand)
+extract_time_features(fuelsource)
+
+
+#netdemand['Year'] =netdemand['Datetime'].dt.year
+#netdemand['Month'] = netdemand['Datetime'].dt.month
+#netdemand['Day of Year'] = netdemand['Datetime'].dt.dayofyear
+#netdemand['Hour'] = netdemand['Datetime'].dt.hour
+#netdemand['Time'] = netdemand['Datetime'].dt.time
 
 
 # Function to add ordinal suffix
@@ -45,14 +59,16 @@ def add_ordinal(n):
 # Extract month name and day with suffix
 
 # Create new column with formatted date
-combined_df['Day'] = combined_df['Datetime'].apply(lambda x: f"{x.strftime('%B')} {add_ordinal(x.day)}")
+netdemand['Day'] = netdemand['Datetime'].apply(lambda x: f"{x.strftime('%B')} {add_ordinal(x.day)}")
 
 
-yearly_avg = combined_df.groupby(['Year', 'Time'])['Net demand'].mean().reset_index()
-yearly_monthly_avg = combined_df.groupby(['Year','Month', 'Time'])['Net demand'].mean().reset_index()
+#yearly_avg = netdemand.groupby(['Year', 'Time'])['Net demand'].mean().reset_index()
+netdemand_yearly_monthly = netdemand.groupby(['Year','Month', 'Time'])['Net demand'].mean().reset_index()
+fuelsource_yearly_monthly = fuelsource.groupby(['Year','Month', 'Time'])['Solar'].mean().reset_index()
+
 
 # --- Controls ---
-available_months = [m for m in yearly_monthly_avg["Month"].dropna().unique()]
+available_months = [m for m in netdemand_yearly_monthly["Month"].dropna().unique()]
 available_months = sorted([int(m) for m in available_months])
 month_names = {i: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][i-1] for i in range(1,13)}
 
@@ -65,7 +81,7 @@ month_choice_num = st.selectbox(
 
 
 #--- Plot 1: Value vs Time for a chosen Month, colored by Year ---
-f1 = yearly_monthly_avg[yearly_monthly_avg["Month"] == month_choice_num].copy()
+f1 = netdemand_yearly_monthly[netdemand_yearly_monthly["Month"] == month_choice_num].copy()
 f1 = f1.sort_values(["Time", "Year"])
 
 fig1 = px.line(
@@ -84,40 +100,29 @@ fig1.update_xaxes(type="category", tickangle=-90)
 #st.subheader("Plot 1")
 st.plotly_chart(fig1, use_container_width=True)
 
-#--- Plot 2: Value vs Time for a chosen day, colored by Year ---
-# --- Controls ---
-available_days = [m for m in combined_df["Day"].dropna().unique()]
-#available_days = sorted([(m) for m in available_days])
-#month_names = {i: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][i-1] for i in range(1,13)}
 
-
-day_choice_num = st.selectbox(
-    "Select Day (for Plot 2)",
-    options=available_days#,
-    #format_func=lambda x: f"({int(x)})"
-)
-
-
-f2 = combined_df[combined_df["Day"] == day_choice_num].copy()
+#--- Plot 1: Value vs Time for a chosen Month, colored by Year ---
+f2 = fuelsource_yearly_monthly[fuelsource_yearly_monthly["Month"] == month_choice_num].copy()
 f2 = f2.sort_values(["Time", "Year"])
 
 fig2 = px.line(
     f2,
     x="Time",
-    y="Net demand",
+    y="Solar",
     color="Year",
     markers=False,
     color_discrete_sequence=px.colors.sequential.algae,
-    title=f"Net Demand vs Time — " + day_choice_num,
+    title=f"Solar vs Time — {month_names[int(month_choice_num)]}",
 )
-fig2.update_layout(xaxis_title="Time of Day", yaxis_title="Net Demand", legend_title="Year")
+fig2.update_layout(xaxis_title="Time of Day", yaxis_title="Solar", legend_title="Year")
 fig2.update_xaxes(type="category", tickangle=-90)
 
-# --- Layout ---
 
-
-#st.subheader("Plot 2")
+#st.subheader("Plot 1")
 st.plotly_chart(fig2, use_container_width=True)
+
+
+
 
 
 
