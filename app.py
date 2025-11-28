@@ -139,15 +139,15 @@ netdemand.tail(1)
 
 # Plot the April Changes
 #--- Plot 1: Value vs Time for a chosen Month, colored by Year ---
-date_choice = st.date_input("Select a date")
+# --- Controls ---
+date_choice = st.date_input("Select a date",
+                    value=[start_date, end_date])
 
 fig1 = px.line(
-    netdemand[netdemand["Date"].isin([datetime(2025, 4, 6),datetime(2025, 4, 7),
-                                     datetime(2025, 4, 8),datetime(2025, 4, 9),
-                                     datetime(2025, 4, 10)])].copy(),
+    netdemand[netdemand["Date"]== date_choice].copy(),
     x="Time",
     y="Net demand",
-    color="Day",
+    #color="Day",
     markers=False,
     color_discrete_sequence=px.colors.sequential.algae,
     title=f"Net Demand vs Time — April 4th 2025",
@@ -224,4 +224,5 @@ fig3.update_xaxes(type="category", tickangle=-70)
 st.plotly_chart(fig3)
 
 #fig3.show()
+
 
