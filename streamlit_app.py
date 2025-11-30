@@ -205,7 +205,7 @@ fig3 = px.line(
     color="Year",
     markers=False,
     color_discrete_sequence=px.colors.sequential.algae,
-    title=f"Net Demand vs Time — {month_names[int(month_choice_num)]}",
+    title=f"Average Net Demand vs Time for {month_names[int(month_choice_num)]}",
 )
 fig3.update_layout(xaxis_title="Time of Day", yaxis_title="MW", legend_title="Year")
 fig3.update_xaxes(type="category", tickangle=-70)
@@ -233,6 +233,7 @@ Github code is available here: https://github.com/Ahangar/caiso_data_duck_cuve
 [5] U.S. Energy Information Administration. (2025, June 20). California: State energy profile analysis. Retrieved from https://www.eia.gov/state/analysis.php?sid=CA  
 [6] Plumer, B. (2025, March 17). A Trump overhaul of the Energy Dept. breaks up clean energy offices. The New York Times. Retrieved from https://www.nytimes.com/2025/03/17/climate/renewable-energy-trump-electricity.html  
 """, unsafe_allow_html=True)
+
 
 
 
