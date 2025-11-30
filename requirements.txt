@@ -1,13 +1,9 @@
-dash
 pandas
 plotly
-pycaiso
 gunicorn
 datetime
 typing
-
 matplotlib
-
 streamlit
-plotly
 pandas
+
