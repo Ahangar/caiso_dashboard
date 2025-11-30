@@ -112,7 +112,7 @@ fig1 = px.line(
     color=px.Constant("Net Demand"),
     markers=False,
     #color_discrete_sequence=px.colors.sequential.algae,
-    #title=f"Net Demand vs Time for Date: {date_choice}",
+    title="The Duck Curve (Net Demand) and Solar and Wind Generation for Selected Date",
 )
 
 fig1.update_traces(line=dict(color="green"))
@@ -172,7 +172,7 @@ long_df = fuelsource_monthly.melt(id_vars='Date', value_vars=cols,
 # Create stacked area chart
 fig2 = px.area(long_df, x='Date', y='Generation', color='Source', 
               color_discrete_sequence=px.colors.qualitative.Light24,
-              title='Monthly Electricity Generation by Source',
+              title='Monthly Electricity Generation by Source in California (data from CAISO)',
               labels={'Generation': 'MW', 'Year': 'Year'})
 
 st.plotly_chart(fig2)
@@ -220,6 +220,11 @@ In many places like California, solar and wind are the cheapest of power sources
 
 ---
 
+For better experience and full interactivity, check out this article as a Streamlit dashboard here: https://whats-with-the-duck.streamlit.app/
+Github code is available here: https://github.com/Ahangar/caiso_data_duck_cuve
+
+---
+
 ### Reference
 [1] California Independent System Operator. (2016). Flexible resources help renewables: Fast facts. Retrieved from https://www.caiso.com/Documents/FlexibleResourcesHelpRenewables_FastFacts.pdf  
 [2] Bird, L., Milligan, M., &amp; Lew, D. (2013). Integrating variable renewable energy: Challenges and solutions (Technical Report NREL/TP-6A20–60451). National Renewable Energy Laboratory. Retrieved from https://docs.nrel.gov/docs/fy13osti/60451.pdf  
@@ -228,5 +233,6 @@ In many places like California, solar and wind are the cheapest of power sources
 [5] U.S. Energy Information Administration. (2025, June 20). California: State energy profile analysis. Retrieved from https://www.eia.gov/state/analysis.php?sid=CA  
 [6] Plumer, B. (2025, March 17). A Trump overhaul of the Energy Dept. breaks up clean energy offices. The New York Times. Retrieved from https://www.nytimes.com/2025/03/17/climate/renewable-energy-trump-electricity.html  
 """, unsafe_allow_html=True)
+
 
 
